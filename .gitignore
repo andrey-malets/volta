@@ -3,8 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
+# Object files
+*.o
+
+# Shared libraries
 *.so
+
+# ELF binaries
+*.elf
 
 # Distribution / packaging
 .Python
