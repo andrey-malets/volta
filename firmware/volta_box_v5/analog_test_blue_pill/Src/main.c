@@ -55,7 +55,7 @@
 #include "usbd_cdc_if.h"
 #include "buffer.h"
 
-#define SENDBUF_SIZE RINGBUF_SIZE/2
+#define SENDBUF_SIZE RINGBUF_SIZE / 2
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -83,43 +83,40 @@ static void MX_TIM3_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-uint8_t overSampleCount = 0;
-uint16_t overSampleISum = 0;
-uint16_t overSampleUSum = 0;
+
+static uint8_t overSampleCount = 0;
+static uint16_t overSampleISum = 0;
+static uint16_t overSampleUSum = 0;
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
   if (htim->Instance == TIM3) {
     HAL_StatusTypeDef status;
-    uint8_t receive_buffer[] = { 0x00, 0x00, 0x00, 0x00 };
+    uint8_t receive_buffer[4];
 
     HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_RESET);
     status = HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)cmd_read_current,
-        receive_buffer, 2, HAL_MAX_DELAY);
+        receive_buffer, sizeof(receive_buffer) / sizeof(receive_buffer[0]),
+        HAL_MAX_DELAY);
     HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_SET);
     uint16_t current_value = ((uint16_t) receive_buffer[3] << 8)
         + (uint16_t) receive_buffer[2];
-    HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_RESET);
-    status = HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)cmd_read_voltage,
-        receive_buffer, 2, HAL_MAX_DELAY);
-    HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_SET);
-    uint16_t voltage_value = ((uint16_t) receive_buffer[3] << 8)
-        + (uint16_t) receive_buffer[2];
+    // HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_RESET);
+    // status = HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)cmd_read_voltage,
+    //     receive_buffer, 2, HAL_MAX_DELAY);
+    // HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_SET);
+    // uint16_t voltage_value = ((uint16_t) receive_buffer[5] << 8)
+    //     + (uint16_t) receive_buffer[4];
 
-    //rb_push(&rb, current_value);
-    if(status == HAL_OK)
-    {
-      if(overSampleCount < 4)
-      {
-        overSampleISum += current_value;
-        overSampleUSum += voltage_value;
-        overSampleCount++;
-      }
-      else
-      {
-        overSampleCount = 0;
+    if (status == HAL_OK) {
+      overSampleISum += current_value;
+      // overSampleUSum += voltage_value;
+
+      if (++overSampleCount == 4) {
         rb_push(&rb, overSampleISum);
-        //rb_push(&rb, overSampleUSum);
+        // rb_push(&rb, overSampleUSum);
         overSampleISum = 0;
         overSampleUSum = 0;
+        overSampleCount = 0;
       }
     }
   }
@@ -134,7 +131,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  uint16_t buff[16];
+  uint16_t buff[SENDBUF_SIZE];
   rb_init(&rb);
 
   /* USER CODE END 1 */
@@ -176,13 +173,16 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+    __disable_irq();
     if (rb_remain(&rb) > SENDBUF_SIZE) {
       for (int i = 0; i < SENDBUF_SIZE; i++)
         buff[i] = rb_pop(&rb);
+      __enable_irq();
       while (CDC_Transmit_FS((uint8_t*) buff, sizeof(buff)) == USBD_BUSY)
         ;
+      __disable_irq();
     }
-
+    __enable_irq();
   }
   /* USER CODE END 3 */
 
@@ -236,7 +236,7 @@ void SystemClock_Config(void)
 
     /**Configure the Systick interrupt time
     */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000);
 
     /**Configure the Systick
     */
@@ -279,6 +279,8 @@ static void MX_TIM3_Init(void)
 
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 119;
+  // htim3.Init.Prescaler = 239;
+  // htim3.Init.Prescaler = 479;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 9;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

@@ -13,11 +13,11 @@
 #define RINGBUF_SIZE 32
 
 struct ringbuf_t {
-	uint16_t buf_[RINGBUF_SIZE];
 	uint16_t *wp_;
 	uint16_t *rp_;
 	uint16_t *tail_;
 	uint16_t remain_;
+	uint16_t buf_[RINGBUF_SIZE];
 };
 
 
