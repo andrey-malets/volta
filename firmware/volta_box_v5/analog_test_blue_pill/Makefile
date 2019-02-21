@@ -103,6 +103,7 @@ DRIVERS_DEPS += \
 
 $(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/%.o: \
 		Drivers/STM32F1xx_HAL_Driver/Src/%.c
+	mkdir -p $(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src
 	$(CC) $(CFLAGS) -o $@ $^
 
 
@@ -126,10 +127,12 @@ MIDDLEWARE_DEPS += \
 
 $(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/%.o: \
 		Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/%.c
+	mkdir -p $(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src
 	$(CC) $(CFLAGS) -o $@ $^
 
 $(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/%.o: \
 		Middlewares/ST/STM32_USB_Device_Library/Core/Src/%.c
+	mkdir -p $(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Core/Src
 	$(CC) $(CFLAGS) -o $@ $^
 
 
@@ -167,6 +170,7 @@ MAIN_DEPS += \
 	$(CONFIG)/Src/usbd_desc.d
 
 $(CONFIG)/Src/%.o: Src/%.c
+	mkdir -p $(CONFIG)/Src
 	$(CC) $(CFLAGS) -o $@ $^
 
 
@@ -177,6 +181,7 @@ STARTUP_OBJS += \
 	$(CONFIG)/startup/startup_stm32f103xb.o
 
 $(CONFIG)/startup/%.o: startup/%.s
+	mkdir -p $(CONFIG)/startup
 	$(AS) $(ASFLAGS) -o $@ $^
 
 
