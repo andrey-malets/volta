@@ -65,8 +65,8 @@ TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-const uint8_t cmd_read_current[] = { 0x03, 0x82, 0x00, 0x00 };
-const uint8_t cmd_read_voltage[] = { 0x01, 0x82, 0x00, 0x00 };
+uint8_t cmd_read_current[] = { 0x03, 0x82, 0x00, 0x00 };
+uint8_t cmd_read_voltage[] = { 0x01, 0x82, 0x00, 0x00 };
 struct ringbuf_t rb;
 
 /* USER CODE END PV */
@@ -93,7 +93,6 @@ uint16_t overSampleISum = 0;
 uint16_t overSampleUSum = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
   if (htim->Instance == TIM3) {
-    HAL_StatusTypeDef status;
     uint8_t receive_buffer[] = { 0x00, 0x00, 0x00, 0x00 };
 
     int i;
@@ -102,7 +101,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
       HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_RESET);
       //GPIOA->ODR &= ~SPI1_NSS_Pin;
       //GPIOA->BSRR = SPI1_NSS_Pin << 16;
-      status = HAL_SPI_TransmitReceive(&hspi1, cmd_read_current, receive_buffer,
+      HAL_SPI_TransmitReceive(&hspi1, cmd_read_current, receive_buffer,
           2, HAL_MAX_DELAY);
       HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_SET);
       //GPIOA->ODR |= SPI1_NSS_Pin;
@@ -112,7 +111,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
       HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_RESET);
       //GPIOA->ODR &= ~SPI1_NSS_Pin;
       //GPIOA->BSRR = SPI1_NSS_Pin << 16;
-      status = HAL_SPI_TransmitReceive(&hspi1, cmd_read_voltage, receive_buffer,
+      HAL_SPI_TransmitReceive(&hspi1, cmd_read_voltage, receive_buffer,
           2, HAL_MAX_DELAY);
       HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_SET);
       //GPIOA->ODR |= SPI1_NSS_Pin;
