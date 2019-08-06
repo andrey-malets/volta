@@ -19,7 +19,6 @@ CC_FLAGS=\
 	-Og -g3 -Wall -Werror -pedantic \
 	-fmessage-length=0 -ffunction-sections -c \
 	-fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" \
-	-DDEVICE_SERIAL=\"$(DEVICE_SERIAL)\"
 
 DEFINES=\
 	'-D__weak=__attribute__((weak))' \
@@ -146,8 +145,7 @@ MAIN_SRCS += \
 	Src/system_stm32f1xx.c \
 	Src/usb_device.c \
 	Src/usbd_cdc_if.c \
-	Src/usbd_conf.c \
-	Src/usbd_desc.c
+	Src/usbd_conf.c
 
 MAIN_OBJS += \
 	$(CONFIG)/Src/buffer.o \
@@ -157,8 +155,7 @@ MAIN_OBJS += \
 	$(CONFIG)/Src/system_stm32f1xx.o \
 	$(CONFIG)/Src/usb_device.o \
 	$(CONFIG)/Src/usbd_cdc_if.o \
-	$(CONFIG)/Src/usbd_conf.o \
-	$(CONFIG)/Src/usbd_desc.o
+	$(CONFIG)/Src/usbd_conf.o
 
 MAIN_DEPS += \
 	$(CONFIG)/Src/buffer.d \
@@ -168,12 +165,17 @@ MAIN_DEPS += \
 	$(CONFIG)/Src/system_stm32f1xx.d \
 	$(CONFIG)/Src/usb_device.d \
 	$(CONFIG)/Src/usbd_cdc_if.d \
-	$(CONFIG)/Src/usbd_conf.d \
-	$(CONFIG)/Src/usbd_desc.d
+	$(CONFIG)/Src/usbd_conf.d
 
 $(CONFIG)/Src/%.o: Src/%.c
 	mkdir -p $(CONFIG)/Src
 	$(CC) $(CFLAGS) -o $@ $^
+
+
+.PHONY: $(CONFIG)/Src/usbd_desc.o
+
+$(CONFIG)/Src/usbd_desc.o: Src/usbd_desc.c
+	$(CC) $(CFLAGS) '-DDEVICE_SERIAL="$(DEVICE_SERIAL)"' -o $@ $^
 
 
 STARTUP_SRCS += \
@@ -187,8 +189,10 @@ $(CONFIG)/startup/%.o: startup/%.s
 	$(AS) $(ASFLAGS) -o $@ $^
 
 
-ALL_OBJS += $(DRIVERS_OBJS) $(MIDDLEWARE_OBJS) $(MAIN_OBJS) $(STARTUP_OBJS)
-ALL_DEPS += $(DRIVERS_DEPS) $(MIDDLEWARE_DEPS) $(MAIN_DEPS) $(STARTUP_DEPS)
+ALL_OBJS += $(DRIVERS_OBJS) $(MIDDLEWARE_OBJS) $(MAIN_OBJS) \
+	$(CONFIG)/Src/usbd_desc.o $(STARTUP_OBJS)
+ALL_DEPS += $(DRIVERS_DEPS) $(MIDDLEWARE_DEPS) $(MAIN_DEPS) \
+	$(CONFIG)/Src/usbd_desc.o $(STARTUP_DEPS)
 
 
 OUTPUT=$(CONFIG)/analog_test_blue_pill.elf
