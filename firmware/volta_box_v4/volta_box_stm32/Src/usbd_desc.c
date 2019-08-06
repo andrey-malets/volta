@@ -54,6 +54,8 @@
 
 /* USER CODE BEGIN INCLUDE */
 
+#include <assert.h>
+
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -292,6 +294,9 @@ uint8_t * USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
   if(speed == USBD_SPEED_HIGH)
   {
+    static_assert(
+        sizeof(USBD_SERIALNUMBER_STRING_FS) == 12 + 1,
+        "Device serial number must be a string with length of exactly 12");
     USBD_GetString((uint8_t *)USBD_SERIALNUMBER_STRING_FS, USBD_StrDesc, length);
   }
   else

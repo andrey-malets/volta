@@ -1,13 +1,15 @@
-CC="$(PREFIX)arm-none-eabi-gcc"
-AS="$(PREFIX)arm-none-eabi-as"
-OBJCOPY="$(PREFIX)arm-none-eabi-objcopy"
-SIZE="$(PREFIX)arm-none-eabi-size"
-
 ECLIPSE_PLUGINS=/Applications/Ac6/SystemWorkbench.app/Contents/Eclipse/plugins
 
+COMPILER_BIN=$(wildcard $(ECLIPSE_PLUGINS)/fr.ac6.mcu.externaltools.arm-*/tools/compiler/bin)
+
+CC="$(COMPILER_BIN)/arm-none-eabi-gcc"
+AS="$(COMPILER_BIN)/arm-none-eabi-as"
+OBJCOPY="$(COMPILER_BIN)/arm-none-eabi-objcopy"
+SIZE="$(COMPILER_BIN)/arm-none-eabi-size"
+
 OPENOCD=./openocd.sh \
-	$(ECLIPSE_PLUGINS)/fr.ac6.mcu.externaltools.openocd.macos64_1.20.0.201809060829/tools \
-	$(ECLIPSE_PLUGINS)/fr.ac6.mcu.debug_2.2.0.201807130628/resources
+	$(wildcard $(ECLIPSE_PLUGINS)/fr.ac6.mcu.externaltools.openocd.*/tools) \
+	$(wildcard $(ECLIPSE_PLUGINS)/fr.ac6.mcu.debug_*/resources)
 
 CONFIG=Debug
 

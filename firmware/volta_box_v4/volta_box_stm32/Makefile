@@ -1,13 +1,15 @@
-CC="$(PREFIX)arm-none-eabi-gcc"
-AS="$(PREFIX)arm-none-eabi-as"
-OBJCOPY="$(PREFIX)arm-none-eabi-objcopy"
-SIZE="$(PREFIX)arm-none-eabi-size"
-
 ECLIPSE_PLUGINS=/Applications/Ac6/SystemWorkbench.app/Contents/Eclipse/plugins
 
+COMPILER_BIN=$(wildcard $(ECLIPSE_PLUGINS)/fr.ac6.mcu.externaltools.arm-*/tools/compiler/bin)
+
+CC="$(COMPILER_BIN)/arm-none-eabi-gcc"
+AS="$(COMPILER_BIN)/arm-none-eabi-as"
+OBJCOPY="$(COMPILER_BIN)/arm-none-eabi-objcopy"
+SIZE="$(COMPILER_BIN)/arm-none-eabi-size"
+
 OPENOCD=./openocd.sh \
-	$(ECLIPSE_PLUGINS)/fr.ac6.mcu.externaltools.openocd.*/tools \
-	$(ECLIPSE_PLUGINS)/fr.ac6.mcu.debug_*/resources
+	$(wildcard $(ECLIPSE_PLUGINS)/fr.ac6.mcu.externaltools.openocd.*/tools) \
+	$(wildcard $(ECLIPSE_PLUGINS)/fr.ac6.mcu.debug_*/resources)
 
 CONFIG=Debug
 
@@ -17,7 +19,7 @@ CC_FLAGS=\
 	-Og -g3 -Wall -Werror -pedantic \
 	-fmessage-length=0 -ffunction-sections -c \
 	-fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" \
-	-DDEVICE_SERIAL=\"$(DEVICE_SERIAL)\"
+	'-DDEVICE_SERIAL="$(DEVICE_SERIAL)"'
 
 DEFINES=\
 	'-D__weak=__attribute__((weak))' \
