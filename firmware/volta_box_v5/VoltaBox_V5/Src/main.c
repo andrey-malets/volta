@@ -99,9 +99,9 @@ const char *errMsg[20]={"FR_OK", "FR_DISK_ERR", "FR_INT_ERR", "FR_NOT_READY", "F
 	  	    			"FR_WRITE_PROTECTED", "FR_INVALID_DRIVE", "FR_NOT_ENABLED","FR_NO_FILESYSTEM",
 	  	    			"FR_MKFS_ABORTED", "FR_TIMEOUT", "FR_LOCKED", "FR_NOT_ENOUGH_CORE",
 	  	    			"FR_TOO_MANY_OPEN_FILES", "FR_INVALID_PARAMETER"};
-const uint8_t cmd_read_current[] = { 0x03, 0x82, 0x00, 0x00 };
-const uint8_t cmd_read_voltage[] = { 0x01, 0x82, 0x00, 0x00 };
-const uint8_t cmd_read[] = { 0x03, 0x82, 0x00, 0x00, 0x00, 0x00 };
+uint8_t cmd_read_current[] = { 0x03, 0x82, 0x00, 0x00 };
+uint8_t cmd_read_voltage[] = { 0x01, 0x82, 0x00, 0x00 };
+uint8_t cmd_read[] = { 0x03, 0x82, 0x00, 0x00, 0x00, 0x00 };
 struct ringbuf_t rb;
 int isCardHere = 0;
 /* USER CODE END PV */
@@ -137,7 +137,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	  uint8_t receive_buffer[4];// = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
 	  int i;
-	  for(i = 0; i < 4 * (~isCardHere&0b1) + isCardHere; i++)
+	  for(i = 0; i < 4 * (~isCardHere & 0x1) + isCardHere; i++)
 	  {
 		  HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_RESET);
 		  HAL_SPI_TransmitReceive(&hspi2, cmd_read_current, receive_buffer,	2, HAL_MAX_DELAY);
@@ -188,7 +188,7 @@ void fSetCurTime(TCHAR* fname)
 }
 
 uint8_t curX=0, curY=0;
-void print(char *text, uint8_t posC, uint8_t posL, uint8_t *scr, uint8_t flag)
+void print(const char *text, uint8_t posC, uint8_t posL, uint8_t *scr, uint8_t flag)
 {
 	int i;
 	if(flag&printClearL)
@@ -226,7 +226,7 @@ uint8_t logC, logL, logStartL = 0, logLCount = 0;
 int8_t logOldL = 0;
 char logData[8][26];//25 Actually + 1 for null character
 
-void toLog(char *msg)
+void toLog(const char *msg)
 {
 	int i;
 	if(logLCount > 7)
@@ -316,9 +316,7 @@ int main(void)
   oledUpdate(scr);
 
   FATFS sdFiles;
-  FIL test;
   FIL measureStat;
-  int ret;
 
   /*toLog("Sheep counter v5.");
   oledUpdate(scr);
@@ -365,7 +363,7 @@ int main(void)
   }
   else
   {
-	  ret = f_mkfs(SDPath, 0, 0);
+	  f_mkfs(SDPath, 0, 0);
   }
 
   // wait USB enumeration

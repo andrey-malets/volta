@@ -32,6 +32,8 @@ INCLUDES=\
 	-IDrivers/STM32F1xx_HAL_Driver/Inc/Legacy \
 	-IMiddlewares/ST/STM32_USB_Device_Library/Core/Inc \
 	-IMiddlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
+	-IMiddlewares/Third_Party/FatFs/src/ \
+	-IMiddlewares/Third_Party/FatFs/src/drivers/ \
 	-IDrivers/CMSIS/Device/ST/STM32F1xx/Include \
 	-IDrivers/CMSIS/Include
 
@@ -53,16 +55,20 @@ DRIVERS_SRCS += \
 	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c \
 	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c \
 	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
+	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c \
 	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pcd.c \
 	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pcd_ex.c \
 	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c \
 	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c \
 	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c \
+	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rtc.c \
+	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_sd.c \
 	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.c \
 	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi_ex.c \
 	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c \
 	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c \
-	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_usb.c
+	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_usb.c \
+	Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_sdmmc.c
 
 DRIVERS_OBJS += \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o \
@@ -72,16 +78,20 @@ DRIVERS_OBJS += \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.o \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.o \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.o \
+	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.o \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pcd.o \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pcd_ex.o \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.o \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.o \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.o \
+	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rtc.o \
+	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_sd.o \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.o \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi_ex.o \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.o \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.o \
-	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_usb.o
+	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_usb.o \
+	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_sdmmc.o
 
 DRIVERS_DEPS += \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.d \
@@ -91,16 +101,20 @@ DRIVERS_DEPS += \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.d \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.d \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.d \
+	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.d \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pcd.d \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pcd_ex.d \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.d \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.d \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.d \
+	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rtc.d \
+	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_sd.d \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.d \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi_ex.d \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.d \
 	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.d \
-	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_usb.d
+	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_usb.d \
+	$(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_sdmmc.d
 
 $(CONFIG)/Drivers/STM32F1xx_HAL_Driver/Src/%.o: \
 		Drivers/STM32F1xx_HAL_Driver/Src/%.c
@@ -112,19 +126,31 @@ MIDDLEWARE_SRCS += \
 	Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c \
 	Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
 	Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
-	Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c
+	Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
+	Middlewares/Third_Party/FatFs/src/diskio.c \
+	Middlewares/Third_Party/FatFs/src/ff.c \
+	Middlewares/Third_Party/FatFs/src/ff_gen_drv.c \
+	Middlewares/Third_Party/FatFs/src/drivers/sd_diskio.c
 
 MIDDLEWARE_OBJS += \
 	$(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.o \
 	$(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.o \
 	$(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.o \
-	$(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.o
+	$(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.o \
+	$(CONFIG)/Middlewares/Third_Party/FatFs/src/diskio.o \
+	$(CONFIG)/Middlewares/Third_Party/FatFs/src/ff.o \
+	$(CONFIG)/Middlewares/Third_Party/FatFs/src/ff_gen_drv.o \
+	$(CONFIG)/Middlewares/Third_Party/FatFs/src/drivers/sd_diskio.o
 
 MIDDLEWARE_DEPS += \
 	$(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.d \
 	$(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.d \
 	$(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.d \
-	$(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.d
+	$(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.d \
+	$(CONFIG)/Middlewares/Third_Party/FatFs/src/ff.d \
+	$(CONFIG)/Middlewares/Third_Party/FatFs/src/ff_gen_drv.d \
+	$(CONFIG)/Middlewares/Third_Party/FatFs/src/diskio.d \
+	$(CONFIG)/Middlewares/Third_Party/FatFs/src/drivers/sd_diskio.d
 
 $(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/%.o: \
 		Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/%.c
@@ -137,8 +163,21 @@ $(CONFIG)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/%.o: \
 	$(CC) $(CFLAGS) -o $@ $^
 
 
+$(CONFIG)/Middlewares/Third_Party/FatFs/src/drivers/%.o: \
+		Middlewares/Third_Party/FatFs/src/drivers/%.c
+	mkdir -p $(CONFIG)/Middlewares/Third_Party/FatFs/src/drivers
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(CONFIG)/Middlewares/Third_Party/FatFs/src/%.o: \
+		Middlewares/Third_Party/FatFs/src/%.c
+	mkdir -p $(CONFIG)/Middlewares/Third_Party/FatFs/src
+	$(CC) $(CFLAGS) -o $@ $^
+
+
 MAIN_SRCS += \
+	Src/bsp_driver_sd.c \
 	Src/buffer.c \
+	Src/fatfs.c \
 	Src/main.c \
 	Src/stm32f1xx_hal_msp.c \
 	Src/stm32f1xx_it.c \
@@ -148,7 +187,9 @@ MAIN_SRCS += \
 	Src/usbd_conf.c
 
 MAIN_OBJS += \
+	$(CONFIG)/Src/bsp_driver_sd.o \
 	$(CONFIG)/Src/buffer.o \
+	$(CONFIG)/Src/fatfs.o \
 	$(CONFIG)/Src/main.o \
 	$(CONFIG)/Src/stm32f1xx_hal_msp.o \
 	$(CONFIG)/Src/stm32f1xx_it.o \
@@ -158,7 +199,8 @@ MAIN_OBJS += \
 	$(CONFIG)/Src/usbd_conf.o
 
 MAIN_DEPS += \
-	$(CONFIG)/Src/buffer.d \
+	$(CONFIG)/Src/bsp_driver_sd.d \
+	$(CONFIG)/Src/fatfs.d \
 	$(CONFIG)/Src/main.d \
 	$(CONFIG)/Src/stm32f1xx_hal_msp.d \
 	$(CONFIG)/Src/stm32f1xx_it.d \
