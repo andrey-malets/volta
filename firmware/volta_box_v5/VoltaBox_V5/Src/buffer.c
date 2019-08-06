@@ -7,6 +7,9 @@
 
 #include "buffer.h"
 
+#include <stdlib.h>
+
+
 void rb_init(struct ringbuf_t *rb, uint16_t size) {
 	rb->size = size;
 	rb->buf_ = realloc(rb->buf_, size*(sizeof(uint16_t)));

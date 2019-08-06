@@ -54,6 +54,8 @@
 
 /* USER CODE BEGIN INCLUDE */
 
+#include <assert.h>
+
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/

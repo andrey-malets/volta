@@ -54,6 +54,8 @@
 
 /* USER CODE BEGIN INCLUDE */
 
+#include <assert.h>
+
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,7 +98,7 @@
 #define USBD_MANUFACTURER_STRING     "Yandex, LLC"
 #define USBD_PID_FS     22336
 #define USBD_PRODUCT_STRING_FS     "VoltaBox"
-#define USBD_SERIALNUMBER_STRING_FS     "000000051000"
+#define USBD_SERIALNUMBER_STRING_FS     DEVICE_SERIAL
 #define USBD_CONFIGURATION_STRING_FS     "CDC Config"
 #define USBD_INTERFACE_STRING_FS     "CDC Interface"
 
@@ -292,6 +294,9 @@ uint8_t * USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
   if(speed == USBD_SPEED_HIGH)
   {
+    static_assert(
+        sizeof(USBD_SERIALNUMBER_STRING_FS) == 12 + 1,
+        "Device serial number must be a string with length of exactly 12");
     USBD_GetString((uint8_t *)USBD_SERIALNUMBER_STRING_FS, USBD_StrDesc, length);
   }
   else
