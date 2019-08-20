@@ -83,14 +83,10 @@ static void MX_TIM3_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-void delay(int t)
-{
-  while(t--) __asm("nop");
-}
 
-uint8_t overSampleCount = 0;
 uint16_t overSampleISum = 0;
 uint16_t overSampleUSum = 0;
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
   if (htim->Instance == TIM3) {
     uint8_t receive_buffer[] = { 0x00, 0x00, 0x00, 0x00 };
@@ -99,34 +95,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     for(i = 0; i < 4; i++)
     {
       HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_RESET);
-      //GPIOA->ODR &= ~SPI1_NSS_Pin;
-      //GPIOA->BSRR = SPI1_NSS_Pin << 16;
-      HAL_SPI_TransmitReceive(&hspi1, cmd_read_current, receive_buffer,
-          2, HAL_MAX_DELAY);
+      HAL_SPI_TransmitReceive(&hspi1, cmd_read_current, receive_buffer, 2,
+          HAL_MAX_DELAY);
       HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_SET);
-      //GPIOA->ODR |= SPI1_NSS_Pin;
-      //GPIOA->BSRR = SPI1_NSS_Pin;
-      uint16_t current_value = ((uint16_t) receive_buffer[3] << 8)
-          + (uint16_t) receive_buffer[2];
+      uint16_t current_value = ((uint16_t) receive_buffer[3] << 8) +
+          (uint16_t) receive_buffer[2];
       HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_RESET);
-      //GPIOA->ODR &= ~SPI1_NSS_Pin;
-      //GPIOA->BSRR = SPI1_NSS_Pin << 16;
       HAL_SPI_TransmitReceive(&hspi1, cmd_read_voltage, receive_buffer,
           2, HAL_MAX_DELAY);
       HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_SET);
-      //GPIOA->ODR |= SPI1_NSS_Pin;
-      //GPIOA->BSRR = SPI1_NSS_Pin;
-      uint16_t voltage_value = ((uint16_t) receive_buffer[3] << 8)
-          + (uint16_t) receive_buffer[2];
-
+      uint16_t voltage_value = ((uint16_t) receive_buffer[3] << 8) +
+          (uint16_t) receive_buffer[2];
       overSampleISum += current_value;
       overSampleUSum += voltage_value;
-      overSampleCount++;
-
-      delay(50);//@72MHz
     }
     rb_push(&rb, overSampleISum);
-    //rb_push(&rb, overSampleUSum);
     overSampleISum = 0;
     overSampleUSum = 0;
   }
