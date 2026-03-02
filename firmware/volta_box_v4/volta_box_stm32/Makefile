@@ -200,4 +200,10 @@ flash: $(OUTPUT_ELF)
 
 .PHONY: clean
 clean:
-	rm -f $(ALL_OBJS) $(ALL_DEPS) $(OUTPUT)
+	rm -f \
+		$(ALL_OBJS) \
+		$(ALL_DEPS) \
+		$(CONFIG)/Src/usbd_desc_*.o \
+		$(CONFIG)/Src/usbd_desc_*.d \
+		$(CONFIG)/*.elf \
+		$(CONFIG)/*.bin
