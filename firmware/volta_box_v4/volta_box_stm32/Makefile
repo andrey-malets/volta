@@ -1,9 +1,9 @@
-PREFIX="arm-none-eabi"
+PREFIX=arm-none-eabi
 
-CC="$(PREFIX)-gcc"
-AS="$(PREFIX)-as"
-OBJCOPY="$(PREFIX)-objcopy"
-SIZE="$(PREFIX)-size"
+CC=$(PREFIX)-gcc
+AS=$(PREFIX)-as
+OBJCOPY=$(PREFIX)-objcopy
+SIZE=$(PREFIX)-size
 
 CONFIG=Debug
 
