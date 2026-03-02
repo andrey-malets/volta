@@ -1,15 +1,9 @@
-ECLIPSE_PLUGINS=/Applications/Ac6/SystemWorkbench.app/Contents/Eclipse/plugins
+PREFIX="arm-none-eabi"
 
-COMPILER_BIN=$(wildcard $(ECLIPSE_PLUGINS)/fr.ac6.mcu.externaltools.arm-*/tools/compiler/bin)
-
-CC="$(COMPILER_BIN)/arm-none-eabi-gcc"
-AS="$(COMPILER_BIN)/arm-none-eabi-as"
-OBJCOPY="$(COMPILER_BIN)/arm-none-eabi-objcopy"
-SIZE="$(COMPILER_BIN)/arm-none-eabi-size"
-
-OPENOCD=./openocd.sh \
-	$(wildcard $(ECLIPSE_PLUGINS)/fr.ac6.mcu.externaltools.openocd.*/tools) \
-	$(wildcard $(ECLIPSE_PLUGINS)/fr.ac6.mcu.debug_*/resources)
+CC="$(PREFIX)-gcc"
+AS="$(PREFIX)-as"
+OBJCOPY="$(PREFIX)-objcopy"
+SIZE="$(PREFIX)-size"
 
 CONFIG=Debug
 
@@ -167,9 +161,7 @@ $(CONFIG)/Src/%.o: Src/%.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 
-.PHONY: $(CONFIG)/Src/usbd_desc.o
-
-$(CONFIG)/Src/usbd_desc.o: Src/usbd_desc.c
+$(CONFIG)/Src/usbd_desc_$(DEVICE_SERIAL).o: Src/usbd_desc.c
 	$(CC) $(CFLAGS) '-DDEVICE_SERIAL="$(DEVICE_SERIAL)"' -o $@ $^
 
 
@@ -185,28 +177,27 @@ $(CONFIG)/startup/%.o: startup/%.s
 
 
 ALL_OBJS += $(DRIVERS_OBJS) $(MIDDLEWARE_OBJS) $(MAIN_OBJS) \
-	$(CONFIG)/Src/usbd_desc.o $(STARTUP_OBJS)
+	$(CONFIG)/Src/usbd_desc_$(DEVICE_SERIAL).o $(STARTUP_OBJS)
 ALL_DEPS += $(DRIVERS_DEPS) $(MIDDLEWARE_DEPS) $(MAIN_DEPS) \
-	$(CONFIG)/Src/usbd_desc.o $(STARTUP_DEPS)
+	$(CONFIG)/Src/usbd_desc._$(DEVICE_SERIAL).o $(STARTUP_DEPS)
 
 
-OUTPUT=$(CONFIG)/analog_test_blue_pill.elf
+OUTPUT=$(CONFIG)/$(DEVICE_SERIAL)
 
-
-$(OUTPUT): $(ALL_OBJS) STM32F103C8Tx_FLASH.ld
+OUTPUT_ELF=$(OUTPUT).elf
+$(OUTPUT_ELF): $(ALL_OBJS) STM32F103C8Tx_FLASH.ld
 	$(CC) $(COMMON_FLAGS) $(LDFLAGS) -T"STM32F103C8Tx_FLASH.ld" -o "$@" \
 		$(ALL_OBJS)
-	$(OBJCOPY) -O ihex "$@" "$(CONFIG)/analog_test_blue_pill.hex"
-	$(SIZE) "$@"
+
+OUTPUT_BIN=$(OUTPUT).bin
+$(OUTPUT_BIN): $(OUTPUT_ELF)
+	$(OBJCOPY) -O binary "$^" "$@"
 
 
-.PHONY: all flash clean
+.PHONY: flash 
+flash: $(OUTPUT_ELF)
+	openocd -f openocd.cfg -c 'program $(OUTPUT_ELF) verify reset exit'
 
-
-all: $(OUTPUT)
-
-flash: all
-	$(OPENOCD) -f openocd.cfg -c 'program $(OUTPUT) verify reset exit'
-
+.PHONY: clean
 clean:
 	rm -f $(ALL_OBJS) $(ALL_DEPS) $(OUTPUT)
